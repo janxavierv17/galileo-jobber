@@ -1,0 +1,22 @@
+services:
+    redis:
+        container_name: redis_container
+        image: redis
+        restart: always
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./docker-volumes/cache:/data
+        command: redis-server --loglevel warning
+
+    mongo:
+        container_name: mongo_container
+        image: mongo
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: example
+        ports:
+            - "27017:27017"
+        volumes:
+            - ./docker-volumes/data:/data/db
