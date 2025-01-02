@@ -19,4 +19,84 @@ services:
         ports:
             - "27017:27017"
         volumes:
-            - ./docker-volumes/data:/data/db
+            - ./docker-volumes/mongo:/data/db
+
+    mysql:
+        restart: always
+        container_name: mysql_container
+        image: mysql
+        environment:
+            - MYSQL_PASSWORD=password
+            - MYSQL_ROOT_PASSWORD=password
+            - MYSQL_DATABASE=jobber_auth
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker-volumes/mysql:/var/lib/mysql
+
+    postgres:
+        restart: always
+        container_name: postgres_container
+        image: postgres
+        environment:
+            - POSTGRES_USR=root
+            - POSTGRES_PASSWORD=password
+            - POSTGRES_DB=jobber_reviews
+        ports:
+            - "8080:8080"
+        volumes:
+            - ./docker-volumes/mysql:/var/lib/mysql
+
+    rabbitmq:
+        restart: always
+        container_name: rabbitmq_container
+        image: rabbitmq:4.0.5-management
+        ports:
+            - "5672:5672" # AMQP protocol port
+            - "15672:15672" # UI port
+
+    elasticsearch:
+        restart: always
+        container_name: elasticsearch_container
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+        ports:
+            - "9200:9200"
+        volumes:
+            - ./docker-volumes/elasticsearch-data:/usr/share/elasticsearch/data
+        networks:
+            - elastic
+        environment:
+            ES_JAVA_OPTS: -Xms1g -Xmx1g
+            # USERNAME: elastic
+            ELASTIC_PASSWORD: password
+            discovery.type: single-node
+            http.host: 0.0.0.0
+            network.host: 0.0.0.0
+            transport.host: 127.0.0.1
+            bootstrap.memory_lock: "true"
+            xpack.security.enabled: "true"
+            xpack.security.enrollment.enabled: "true"
+            xpack.security.authc.api_key.enabled: "true"
+            xpack.monitoring.collection.enabled: "true"
+            xpack.security.authc.token.enabled: "true"
+
+    kibana:
+        restart: always
+        container_name: kibana_container
+        image: docker.elastic.co/kibana/kibana:8.17.0
+        depends_on:
+            - elasticsearch
+        ports:
+            - "5601:5601"
+        volumes:
+            - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+        networks:
+            - elastic
+        environment:
+            - ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
+            - ELASTICSEARCH_USERNAME=kibana_system
+            - KIBANA_SYSTEM_PASSWORD=njUc6ftzFagbJ33QrlAH
+
+networks:
+    elastic:
+        name: elastic
