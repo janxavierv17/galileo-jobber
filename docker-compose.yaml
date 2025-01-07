@@ -54,6 +54,9 @@ services:
         ports:
             - "5672:5672" # AMQP protocol port
             - "15672:15672" # UI port
+        environment:
+            - RABBITMQ_DEFAULT_USER=admin
+            - RABBITMQ_DEFAULT_PASS=password
 
     elasticsearch:
         restart: always
@@ -96,6 +99,7 @@ services:
             - ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
             - ELASTICSEARCH_USERNAME=kibana_system
             - KIBANA_SYSTEM_PASSWORD=njUc6ftzFagbJ33QrlAH
+            - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=AAEAAWVsYXN0aWMva2liYW5hL2pvYmJlci1raWJhbmE6Y1Z0RmRPbGpUWGk0OTBySElCZmlFUQ
 
 networks:
     elastic:
