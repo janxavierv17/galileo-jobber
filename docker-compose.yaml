@@ -101,6 +101,21 @@ services:
             - KIBANA_SYSTEM_PASSWORD=njUc6ftzFagbJ33QrlAH
             - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=AAEAAWVsYXN0aWMva2liYW5hL2pvYmJlci1raWJhbmE6Y1Z0RmRPbGpUWGk0OTBySElCZmlFUQ
 
+    notifications:
+        container_name: notifications_container
+        restart: always
+        ports:
+            - "4001:4001"
+        env_file:
+            - ./notification-service/.env
+        build:
+            context: ./notification-service
+            dockerfile: Dockerfile.dev
+        networks:
+            - elastic
+        depends_on:
+            - elasticsearch
+
 networks:
     elastic:
         name: elastic
