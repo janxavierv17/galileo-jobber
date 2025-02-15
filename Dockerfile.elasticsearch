@@ -1,0 +1,11 @@
+FROM docker.elastic.co/elasticsearch/elasticsearch:8.17.0-arm64
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk && \
+    update-alternatives --config java
+
+ENV ES_JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64
+
+USER elasticsearch

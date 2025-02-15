@@ -64,7 +64,8 @@ services:
     elasticsearch:
         restart: always
         container_name: elasticsearch_container
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+        build:
+            dockerfile: Dockerfile.elasticsearch
         ports:
             - "9200:9200"
         volumes:
@@ -110,12 +111,12 @@ services:
         ports:
             - "4001:4001"
         env_file:
-            - ./notification-service/.env
+            - ./galileo-notification/.env
         environment:
             - ELASTIC_SEARCH_URL=http://elastic:password@elasticsearch_container:9200
             - RABBITMQ_ENDPOINT=amqp://admin:password@rabbitmq_container:5672
         build:
-            context: ./notification-service
+            context: ./galileo-notification
             dockerfile: Dockerfile.dev
         networks:
             - elastic
@@ -129,11 +130,11 @@ services:
         ports:
             - "4000:4000"
         env_file:
-            - ./gateway-service/.env
+            - ./galileo-gateway/.env
         environment:
             - ELASTIC_SEARCH_URL=http://elastic:password@elasticsearch_container:9200
         build:
-            context: ./gateway-service
+            context: ./galileo-gateway
             dockerfile: Dockerfile.dev
         networks:
             - elastic
